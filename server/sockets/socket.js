@@ -21,11 +21,13 @@ io.on('connection', (client) => {
 
         client.to(data.sala).emit('listaPersona', usuarios.getPersonasPorSala( data.sala ) );
 
+        client.broadcast.to(data.sala).emit('crearMensaje', crearMensaje('Admin', `${data.nombre} se unio`));
+
         call(personas);
         
     });
 
-    client.on('crearMensaje', (data) => {
+    client.on('crearMensaje', (data, callback) => {
         
 
         let persona = usuarios.getPersona(client.id);
@@ -33,6 +35,8 @@ io.on('connection', (client) => {
         let mensaje = crearMensaje( persona.nombre, data.mensaje );
 
         client.broadcast.to(persona.sala).emit( 'crearMensaje', mensaje );
+
+        callback(mensaje);
     });
 
     client.on('disconnect', () => {
